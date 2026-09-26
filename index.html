@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow Mint | Official Solana Studio</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            yellow: '#FFE600',
+                            yellowDark: '#D4BF00',
+                            bg: '#08090C',
+                            card: '#0F1117',
+                            cardHover: '#161922',
+                            border: '#1E2230',
+                            accent: '#FFE600'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #08090C;
+            color: #F3F4F6;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(255, 230, 0, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 85% 75%, rgba(59, 130, 246, 0.03) 0%, transparent 40%);
+        }
+
+        .glow-yellow {
+            box-shadow: 0 0 30px -5px rgba(255, 230, 0, 0.3);
+        }
+
+        .glow-yellow-sm {
+            box-shadow: 0 0 15px -3px rgba(255, 230, 0, 0.2);
+        }
+
+        .card-hover {
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card-hover:hover {
+            border-color: rgba(255, 230, 0, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -5px rgba(255, 230, 0, 0.12);
+        }
+
+        .faq-hover {
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .faq-hover:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 230, 0, 0.45);
+            box-shadow: 0 8px 20px -8px rgba(255, 230, 0, 0.16);
+        }
+
+        .nav-hover {
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .nav-hover:hover {
+            transform: translateY(-2px);
+        }
+
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+            transition-delay: var(--reveal-delay, 0ms);
+        }
+
+        .scroll-reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .card-hover,
+            .faq-hover,
+            .nav-hover,
+            .scroll-reveal {
+                transition: none;
+            }
+
+            .card-hover:hover,
+            .faq-hover:hover,
+            .nav-hover:hover,
+            .scroll-reveal {
+                transform: none;
+            }
+
+            .scroll-reveal {
+                opacity: 1;
+            }
+        }
+
+        /* Continuous Smooth Ticker */
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            display: flex;
+            width: 200%;
+            animation: marquee 16s linear infinite;
+        }
+
+        /* Custom Notification Toast */
+        #toast {
+            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-yellow selection:text-black">
+
+    <!-- Top Announcement Banner -->
+    <div class="bg-brand-yellow text-black overflow-hidden py-2 font-mono text-xs font-black tracking-wider uppercase border-b border-black/20">
+        <div class="animate-marquee whitespace-nowrap flex gap-10 items-center">
+            <span>⚡ WE PRINT MEMES, THE CHART DOES THE REST.</span>
+            <span>•</span>
+            <span>🔥 0% UTILITY. 100% CONFIDENCE.</span>
+            <span>•</span>
+            <span>👀 DON'T BLINK OR YOU'LL MISS THE LAUNCH.</span>
+            <span>•</span>
+            <span>⚡ WE PRINT MEMES, THE CHART DOES THE REST.</span>
+            <span>•</span>
+            <span>🔥 0% UTILITY. 100% CONFIDENCE.</span>
+            <span>•</span>
+            <span>👀 DON'T BLINK OR YOU'LL MISS THE LAUNCH.</span>
+        </div>
+    </div>
+
+    <!-- Toast Notification Popup -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 pointer-events-none bg-brand-yellow text-black px-5 py-3.5 rounded-xl font-black text-sm flex items-center gap-2.5 shadow-2xl border border-black/20">
+        <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+        <span id="toastMsg">Action completed!</span>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="border-b border-brand-border/80 bg-brand-bg/90 backdrop-blur-md sticky top-0 z-40 py-4 px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3 group">
+                <img src="3fcf036561544cc9ecb91b83a4b4e09e.jpg" alt="Shadow Mint logo" class="w-9 h-9 rounded-xl object-cover transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3">
+                <div>
+                    <div class="font-black text-sm sm:text-base tracking-wide text-white leading-none">SHADOW<span class="text-brand-yellow">MINT</span></div>
+                </div>
+            </a>
+
+            <div class="flex items-center gap-3">
+                <a href="#faq" class="nav-hover text-gray-400 hover:text-brand-yellow font-black text-xs sm:text-sm transition px-3 py-1.5 rounded-xl border border-transparent hover:border-brand-border">FAQ</a>
+                <a href="#links" class="nav-hover bg-brand-yellow hover:bg-brand-yellowDark text-black font-black px-4 py-1.5 rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 shadow-md hover:shadow-[0_8px_20px_-8px_rgba(255,230,0,0.7)]">
+                    <i data-lucide="zap" class="w-4 h-4"></i>
+                    <span>Links</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Bio & Links Container -->
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6 flex-1 w-full">
+
+        <!-- Character Avatar & Tagline Header -->
+        <div class="text-center space-y-4">
+            <div class="space-y-2.5 pt-2">
+                <div class="inline-flex items-center gap-2 text-xs sm:text-sm font-black text-brand-yellow bg-brand-yellow/10 px-3.5 py-1 rounded-full border border-brand-yellow/30 font-mono tracking-wide">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span>0% UTILITY. 100% CONFIDENCE.</span>
+                </div>
+
+                <h1 class="text-2xl sm:text-3xl font-black text-white leading-tight px-2">
+                    "We print memes, <br><span class="text-brand-yellow">the chart does the rest."</span>
+                </h1>
+
+                <p class="text-gray-400 text-sm sm:text-base max-w-xl mx-auto font-medium leading-relaxed">
+                    Shadow Mint is the official production studio powering viral Solana memecoins.
+                </p>
+            </div>
+
+            <!-- Spotlight Banner Box -->
+            <div class="bg-brand-card p-4 sm:p-5 rounded-2xl border border-brand-yellow/40 text-left flex items-center gap-3.5 shadow-lg max-w-3xl mx-auto">
+                <div class="p-3 rounded-xl bg-brand-yellow text-black font-black shrink-0 glow-yellow-sm">
+                    <i data-lucide="zap" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <div class="font-black text-white text-sm sm:text-base">Don't blink or you'll miss the launch.</div>
+                    <div class="text-xs sm:text-sm text-gray-400 font-mono mt-0.5">Explore all official social channels and direct links below.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Links Hub Section -->
+        <section id="links" class="space-y-3.5 pt-2">
+            <div class="flex items-center justify-between border-b border-brand-border/80 pb-2">
+                <span class="text-xs sm:text-sm font-black uppercase tracking-wider text-gray-400 font-mono flex items-center gap-2">
+                    <i data-lucide="link-2" class="w-4 h-4 text-brand-yellow"></i>
+                    <span>OFFICIAL LINKS</span>
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+
+                <!-- X / Twitter -->
+                <a href="https://x.com/ShadowMint21" target="_blank" class="bg-brand-card p-4 sm:p-4.5 rounded-2xl border border-brand-border card-hover flex items-center justify-between group">
+                    <div class="flex items-center gap-3.5">
+                        <div class="p-3 rounded-xl bg-black text-brand-yellow border border-brand-border flex items-center justify-center">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-sm sm:text-base font-extrabold text-white group-hover:text-brand-yellow transition">X / Twitter</div>
+                            <div class="text-xs text-gray-400 font-mono mt-0.5">@ShadowMint21</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-xs font-black text-brand-yellow bg-brand-yellow/10 px-3 py-1.5 rounded-xl border border-brand-yellow/30">
+                        <span>Follow</span>
+                        <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                    </div>
+                </a>
+
+                <!-- Telegram Channel -->
+                <a href="https://t.me/ShadowMint21" target="_blank" class="bg-brand-card p-4 sm:p-4.5 rounded-2xl border border-brand-border card-hover flex items-center justify-between group">
+                    <div class="flex items-center gap-3.5">
+                        <div class="p-3 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-sm sm:text-base font-extrabold text-white group-hover:text-blue-400 transition">Telegram Channel</div>
+                            <div class="text-xs text-gray-400 font-mono mt-0.5">@ShadowMint21</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-xs font-black text-blue-400 bg-blue-500/10 px-3 py-1.5 rounded-xl border border-blue-500/30">
+                        <span>Join</span>
+                        <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                    </div>
+                </a>
+
+                <!-- Telegram Group / Chat -->
+                <a href="https://t.me/ShadowMint2" target="_blank" class="bg-brand-card p-4 sm:p-4.5 rounded-2xl border border-brand-border card-hover flex items-center justify-between group">
+                    <div class="flex items-center gap-3.5">
+                        <div class="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-2.01 1.27-5.68 3.75-.54.37-1.03.55-1.47.54-.48-.01-1.4-.27-2.09-.5-.85-.27-1.52-.42-1.46-.89.03-.24.37-.49 1.01-.75 3.96-1.72 6.6-2.86 7.93-3.41 3.77-1.57 4.56-1.84 5.07-1.85.11 0 .37.03.53.16.14.11.18.26.2.37.02.13.01.27.01.32z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-sm sm:text-base font-extrabold text-white group-hover:text-emerald-400 transition">Telegram Group</div>
+                            <div class="text-xs text-gray-400 font-mono mt-0.5">@ShadowMint2</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-xs font-black text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-xl border border-emerald-500/30">
+                        <span>Chat</span>
+                        <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="space-y-3.5 pt-4 border-t border-brand-border/80">
+            <div class="flex items-center justify-between pb-1">
+                <span class="text-xs sm:text-sm font-black uppercase tracking-wider text-gray-400 font-mono flex items-center gap-2">
+                    <i data-lucide="help-circle" class="w-4 h-4 text-brand-yellow"></i>
+                    <span>FREQUENTLY ASKED QUESTIONS</span>
+                </span>
+            </div>
+
+            <div class="space-y-3">
+                <!-- FAQ Item 1 -->
+                <details class="faq-hover group bg-brand-card rounded-2xl border border-brand-border overflow-hidden transition-all duration-200">
+                    <summary class="flex items-center justify-between p-4 sm:p-4.5 cursor-pointer font-extrabold text-white text-sm sm:text-base select-none list-none group-open:text-brand-yellow">
+                        <span>What is Shadow Mint?</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform duration-200 group-open:rotate-180 group-open:text-brand-yellow"></i>
+                    </summary>
+                    <div class="px-4 sm:px-4.5 pb-4 pt-1 text-xs sm:text-sm text-gray-400 font-medium leading-relaxed border-t border-brand-border/50">
+                        Shadow Mint is an official Solana meme studio specializing in viral token branding, creative direction, and meme creation. As our motto says: <span class="text-brand-yellow font-bold">"We print memes, the chart does the rest."</span>
+                    </div>
+                </details>
+
+                <!-- FAQ Item 2 -->
+                <details class="faq-hover group bg-brand-card rounded-2xl border border-brand-border overflow-hidden transition-all duration-200">
+                    <summary class="flex items-center justify-between p-4 sm:p-4.5 cursor-pointer font-extrabold text-white text-sm sm:text-base select-none list-none group-open:text-brand-yellow">
+                        <span>Where can I find official Shadow Mint launches?</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform duration-200 group-open:rotate-180 group-open:text-brand-yellow"></i>
+                    </summary>
+                    <div class="px-4 sm:px-4.5 pb-4 pt-1 text-xs sm:text-sm text-gray-400 font-medium leading-relaxed border-t border-brand-border/50">
+                        All official token announcements, contract addresses, and launch teasers are published exclusively through our verified Telegram Channel (<a href="https://t.me/ShadowMint21" target="_blank" class="text-brand-yellow hover:underline font-bold">@ShadowMint21</a>) and X account (<a href="https://x.com/ShadowMint21" target="_blank" class="text-brand-yellow hover:underline font-bold">@ShadowMint21</a>).
+                    </div>
+                </details>
+
+                <!-- FAQ Item 3 -->
+                <details class="faq-hover group bg-brand-card rounded-2xl border border-brand-border overflow-hidden transition-all duration-200">
+                    <summary class="flex items-center justify-between p-4 sm:p-4.5 cursor-pointer font-extrabold text-white text-sm sm:text-base select-none list-none group-open:text-brand-yellow">
+                        <span>How can I contact or join the community?</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform duration-200 group-open:rotate-180 group-open:text-brand-yellow"></i>
+                    </summary>
+                    <div class="px-4 sm:px-4.5 pb-4 pt-1 text-xs sm:text-sm text-gray-400 font-medium leading-relaxed border-t border-brand-border/50">
+                        You can chat directly with our team and community members inside our official Telegram Group (<a href="https://t.me/ShadowMint2" target="_blank" class="text-brand-yellow hover:underline font-bold">@ShadowMint2</a>) or send us a DM on X.
+                    </div>
+                </details>
+
+                <!-- FAQ Item 4 -->
+                <details class="faq-hover group bg-brand-card rounded-2xl border border-brand-border overflow-hidden transition-all duration-200">
+                    <summary class="flex items-center justify-between p-4 sm:p-4.5 cursor-pointer font-extrabold text-white text-sm sm:text-base select-none list-none group-open:text-brand-yellow">
+                        <span>Are there any utility tokens or private presales?</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform duration-200 group-open:rotate-180 group-open:text-brand-yellow"></i>
+                    </summary>
+                    <div class="px-4 sm:px-4.5 pb-4 pt-1 text-xs sm:text-sm text-gray-400 font-medium leading-relaxed border-t border-brand-border/50">
+                        No. Remember: <span class="text-brand-yellow font-bold">0% utility. 100% confidence.</span> Beware of impersonators or fake admins. We will never DM you first asking for funds or wallet keys.
+                    </div>
+                </details>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-brand-border/80 bg-black/80 py-5 px-4 text-center text-xs text-gray-400 space-y-1.5">
+        <div class="flex items-center justify-center gap-2">
+            <span class="font-extrabold text-white text-sm">SHADOW<span class="text-brand-yellow">MINT</span></span>
+        </div>
+        <p class="font-mono text-xs text-gray-500">© 2026 Shadow Mint. All rights reserved.</p>
+    </footer>
+
+    <!-- Interactive Script Logic -->
+    <script>
+        window.onload = function() {
+            lucide.createIcons();
+
+            if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+                return;
+            }
+
+            const revealItems = document.querySelectorAll("main > .text-center, #links .card-hover, #faq details, footer");
+
+            if (!("IntersectionObserver" in window)) {
+                return;
+            }
+
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("is-visible");
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12, rootMargin: "0px 0px -32px 0px" });
+
+            revealItems.forEach((item, index) => {
+                item.classList.add("scroll-reveal");
+                item.style.setProperty("--reveal-delay", `${(index % 3) * 100}ms`);
+                revealObserver.observe(item);
+            });
+        };
+
+        function copyToClipboard(text, customMessage) {
+            const temp = document.createElement("input");
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand("copy");
+            document.body.removeChild(temp);
+
+            showToast(customMessage || "Copied to clipboard!");
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            const toastMsg = document.getElementById("toastMsg");
+            toastMsg.innerText = msg;
+
+            toast.classList.remove("translate-y-20", "opacity-0");
+            toast.classList.add("translate-y-0", "opacity-100");
+
+            setTimeout(() => {
+                toast.classList.remove("translate-y-0", "opacity-100");
+                toast.classList.add("translate-y-20", "opacity-0");
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
